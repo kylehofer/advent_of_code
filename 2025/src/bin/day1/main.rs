@@ -5,7 +5,7 @@ enum Direction {
 }
 
 struct Movement {
-    direction: Direction,
+    direction: i16,
     distance: i16,
 }
 
@@ -34,11 +34,7 @@ pub fn part1(input: &str) -> i16 {
         let direction = line.chars().next().unwrap();
 
         let movement = Movement {
-            direction: if direction == 'L' {
-                Direction::Left
-            } else {
-                Direction::Right
-            },
+            direction: if direction == 'L' { -1 } else { 1 },
             distance: line[1..].parse().unwrap(),
         };
 
@@ -58,11 +54,7 @@ pub fn part2(input: &str) -> i16 {
         let direction = line.chars().next().unwrap();
 
         let movement = Movement {
-            direction: if direction == 'L' {
-                Direction::Left
-            } else {
-                Direction::Right
-            },
+            direction: if direction == 'L' { -1 } else { 1 },
             distance: line[1..].parse().unwrap(),
         };
 

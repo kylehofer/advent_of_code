@@ -117,7 +117,6 @@ fn test_sequence(
         for _ in 0..sequence_length {
             value = (value * gap_power) + power;
             increment = (increment * gap_power) + 1;
-            // println!("building: {value} {gap_power} {power}");
         }
     }
 
