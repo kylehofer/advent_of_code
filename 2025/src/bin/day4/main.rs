@@ -1,3 +1,5 @@
+use std::{f32::consts::E, time::Instant};
+
 use aoc2025::utils;
 
 const PAPER_ROLL: char = '@';
@@ -102,29 +104,57 @@ pub fn part1(input: &str) -> u32 {
 const THRESHOLD: u32 = ((4 * EMPTY as u32) + (4 * PAPER_ROLL as u32)) / 8;
 
 pub fn part2(input_template: &str) -> u32 {
-    let mut result = 0;
+    let mut result = 1;
     let mut next_result = 0;
 
-    let mut input: Vec<Vec<char>> = input_template
-        .lines()
-        .map(|line| line.chars().collect())
-        .map(|value: Vec<char>| [&vec![EMPTY; 1][..], &value[..], &vec![EMPTY; 1][..]].concat())
-        .collect();
+    let mut input: Vec<Vec<char>>;
 
-    let length = input[0].len();
+    let test_length: usize = match input_template.find('\n') {
+        Some(index) => index,
+        None => 0,
+    };
+
+    let height: usize = input_template.len() / test_length;
+    let length = test_length + 2;
+
+    let mut checkable_index: Vec<(usize, usize)> = Vec::with_capacity(height * length);
+
     {
-        input.insert(0, vec![EMPTY; length]);
+        const EMPTY_ARR: [char; 1] = [EMPTY];
+        input = Vec::with_capacity(height + 2);
+        input.push(vec![EMPTY; length]);
+
+        let mut i = 1;
+
+        input_template
+            .lines()
+            .map(|line| {
+                let temp: Vec<char> = line.chars().collect();
+                return [&EMPTY_ARR, temp.as_slice(), &EMPTY_ARR].concat();
+            })
+            .for_each(|f| {
+                f.iter()
+                    // .filter(|&&c| c == PAPER_ROLL)
+                    .enumerate()
+                    .for_each(|(x, &c)| {
+                        if c == PAPER_ROLL {
+                            checkable_index.push((i, x))
+                        }
+                    });
+                input.push(f);
+                i += 1;
+            });
+
         input.push(vec![EMPTY; length]);
     }
 
-    loop {
-        for row in 1..input.len() - 1 {
-            for column in 1..(length - 1) {
-                if input[row][column] != PAPER_ROLL {
-                    continue;
-                }
+    while result != next_result {
+        result = next_result;
 
-                let calc = (input[row - 1][column - 1] as u32
+        checkable_index = checkable_index
+            .into_iter()
+            .filter(|&(row, column)| {
+                if ((input[row - 1][column - 1] as u32
                     + input[row - 1][column] as u32
                     + input[row - 1][column + 1] as u32
                     + input[row][column - 1] as u32
@@ -132,19 +162,16 @@ pub fn part2(input_template: &str) -> u32 {
                     + input[row + 1][column - 1] as u32
                     + input[row + 1][column] as u32
                     + input[row + 1][column + 1] as u32)
-                    / 8;
-
-                if calc < THRESHOLD {
-                    input[row][column] = '.';
+                    >> 3)
+                    < THRESHOLD
+                {
+                    input[row][column] = EMPTY;
                     next_result += 1;
+                    return false;
                 }
-            }
-        }
-
-        if next_result == result {
-            break;
-        }
-        result = next_result;
+                return true;
+            })
+            .collect();
     }
 
     return result;

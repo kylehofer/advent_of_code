@@ -12,6 +12,8 @@ mod day2;
 mod day3;
 #[path = "../src/bin/day4/main.rs"]
 mod day4;
+#[path = "../src/bin/day5/main.rs"]
+mod day5;
 
 pub fn benchmark<T: Display, P: Display>(
     crit: &mut Criterion,
@@ -53,5 +55,10 @@ fn day4(crit: &mut Criterion) {
     benchmark(crit, details.day, &details.input, day4::part1, day4::part2);
 }
 
-criterion_group!(benches, day1, day2, day3, day4);
+fn day5(crit: &mut Criterion) {
+    let details = day5::get_details();
+    benchmark(crit, details.day, &details.input, day5::part1, day5::part2);
+}
+
+criterion_group!(benches, day1, day2, day3, day4, day5);
 criterion_main!(benches);
